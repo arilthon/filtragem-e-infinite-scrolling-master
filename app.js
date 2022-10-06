@@ -1,4 +1,6 @@
 const postsContainer = document.querySelector('#posts-container')
+const loaderContainer = document.querySelector('.loader')
+
 let page = 1
 
 const getPosts = async () => {
@@ -7,7 +9,7 @@ const getPosts = async () => {
   return response.json()
 }
 
-const addPostsIntoDom = async () => {
+const addPostsIntoDOM = async () => {
   const posts = await getPosts()
   const postsTemplate = posts
     .map(
@@ -26,4 +28,31 @@ const addPostsIntoDom = async () => {
   postsContainer.innerHTML = postsTemplate
 }
 
-addPostsIntoDom()
+addPostsIntoDOM()
+
+const getNextPost = () => {
+  page++
+  addPostsIntoDOM()
+}
+
+const removeLoader = () => {
+  setTimeout(() => {
+    loaderContainer.classList.remove('show')
+    getNextPost()
+  }, 1000)
+}
+
+const showLoader = () => {
+  loaderContainer.classList.add('show')
+  removeLoader()
+}
+
+window.addEventListener('scroll', () => {
+  const { clientHeight, scrollHeight, scrollTop } = document.documentElement
+  const isPageBottonAlmostReached =
+    scrollTop + clientHeight >= scrollHeight - 10
+
+  if (isPageBottonAlmostReached) {
+    showLoader()
+  }
+})
